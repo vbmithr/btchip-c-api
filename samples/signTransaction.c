@@ -20,7 +20,7 @@
 Sample configuration file 
 
 rawTx = "0100000002ba0eb35fa910ccd759ff46b5233663e96017e8dfaedd315407dc5be45d8c260f000000001976a9146ce472b3cfced15a7d50b6b0cd75a3b042554e8e88acfdffffff69c84956a9cc0ec5986091e1ab229e1a7ea6f4813beb367c01c8ccc708e160cc000000001976a9146ce472b3cfced15a7d50b6b0cd75a3b042554e8e88acfdffffff01a17c0100000000001976a914efd0919fc05311850a8382b9c7e80abcd347343288ac00000000"
-keyPaths = [ "44'/1'/0'/0/0", "44'/1'/0'/0/0" ]
+keyPath = "44'/1'/0'/0/0"
 rawPrevTxs = [ "010000000324c6fae955eae55c27639e5537d00e6ef11559c26f9c36c6770030b38702b19b0d0000006b483045022100c369493b6caa7016efd537eedce8d9e44fe14c345cd5edbb8bdca5545daf4cbe022053ac076f1c04f2f10f107f2890d5d95513547690b9a27d647d1c1ea68f6f3512012102f812962645e606a97728876d93324f030c1fe944d58466960104d810e8dc4945ffffffff24c6fae955eae55c27639e5537d00e6ef11559c26f9c36c6770030b38702b19b0a0000006b48304502210094f901df086a6499f24f678eef305e81eed11d730696cfa23cf1a9e2208ab98302205e628d259e2450d71d67ad54a58b0f58d6b643b70957c8a72e8df1293b2eb9be012102f812962645e606a97728876d93324f030c1fe944d58466960104d810e8dc4945ffffffff24c6fae955eae55c27639e5537d00e6ef11559c26f9c36c6770030b38702b19b0c0000006a47304402205c59502f9075f764dad17d59da9eb5429e969e2608ab579e3185f639dfda2eee0220614d2101e2c17612dc59a247f6f5cbdefcd7ea8f74654caa08b11f42873e586201210268a925507fd7e84295e172b3eea2f056c166ddc874fcda45864d872725094225ffffffff0150c30000000000001976a9146ce472b3cfced15a7d50b6b0cd75a3b042554e8e88ac00000000", "0100000001df5401686b5608195037e8978f6775db0c59d6cee8bb82aa25f4d8635481f56f010000006a47304402201d43a31c9d0f23f2bf2d39ae6d03ff217cb8bf7ddc7c5b1725f6f2f98d855b0c0220459426150782b01ca75958428e34f5e345e85ccae4333025eeb9baef85b3f9fc0121024bb68261bac7e49c99ad1e52fb5e91f09973d45f5d24715c9e64582a24856cc3ffffffff0260ea0000000000001976a9146ce472b3cfced15a7d50b6b0cd75a3b042554e8e88ac91351900000000001976a914efd0919fc05311850a8382b9c7e80abcd347343288ac00000000" ]
 */
 
@@ -44,7 +44,7 @@ rawPrevTxs = [ "010000000324c6fae955eae55c27639e5537d00e6ef11559c26f9c36c6770030
 #define SIGHASH_ALL 0x01
 
 #define RAW_TX "rawTx"
-#define KEY_PATHS "keyPaths"
+#define KEY_PATH "keyPath"
 #define TX_PREV "rawPrevTxs"
 #define CHANGE "change"
 
@@ -83,8 +83,8 @@ int main(int argc, char **argv) {
 	FILE *outFile = NULL;
 	dongleHandle dongle = NULL;
 	config_t cfg;
-	config_setting_t *keyPaths;
 	config_setting_t *rawPrevTxs;
+	const char *keyPath;
 	const char *rawTxString;	
 	const char *change;
 	bitcoinTransaction *rawTx = NULL;
@@ -139,27 +139,19 @@ int main(int argc, char **argv) {
 		goto error;
 	}
 
-	keyPaths = config_lookup(&cfg, KEY_PATHS);
-	if (!keyPaths) {
-		fprintf(stderr, "Missing %s\n", KEY_PATHS);
+	if (!config_lookup_string(&cfg, KEY_PATH, &keyPath)) {
+		fprintf(stderr, "Missing %s\n", KEY_PATH);
 		goto error;
 	}
-	if (!config_setting_is_array(keyPaths)) {
-		fprintf(stderr, "Invalid type for %s - expecting array\n", KEY_PATHS);
-		goto error;
-	}
-	if (config_setting_length(keyPaths) != txInputs) {
-		fprintf(stderr, "Invalid length for %s - expected %ld\n", KEY_PATHS, txInputs);
-		goto error;
-	}
+	char keyPathCopy[128];
 	for (i=0; i<txInputs; i++) {
-		const char *data = config_setting_get_string_elem(keyPaths, i);
 		signData[i].keyPathLength = 0;
-		if (data != NULL) {
-			signData[i].keyPathLength = convertPath((char*)data, signData[i].keyPath);
+		if (keyPath != NULL) {
+			strncpy(keyPathCopy, keyPath, 128);
+			signData[i].keyPathLength = convertPath(keyPathCopy, signData[i].keyPath);
 		}
 		if (signData[i].keyPathLength <= 0) {
-			fprintf(stderr, "Invalid key path %s\n", data);
+			fprintf(stderr, "Invalid key path %s\n", keyPath);
 			goto error;
 		}
 	}
