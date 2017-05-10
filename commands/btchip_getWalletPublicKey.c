@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
 	apduSize = 0;
 	in[apduSize++] = BTCHIP_CLA;
 	in[apduSize++] = BTCHIP_INS_GET_WALLET_PUBLIC_KEY;
-	in[apduSize++] = 0x00;
+	in[apduSize++] = 0x01;
 	in[apduSize++] = 0x00;
 	in[apduSize++] = 0x01 + (4 * keyPathLength);
 	in[apduSize++] = keyPathLength;
