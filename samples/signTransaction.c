@@ -210,8 +210,8 @@ int main(int argc, char **argv) {
 
 	// Compute trusted inputs 
 
+	bitcoinInput *currentInput = rawTx->inputs;
 	for (i=0; i<txInputs; i++) {
-		bitcoinInput *currentInput = rawTx->inputs;
 		uint32_t index = readUint32LE(currentInput->prevOut + 32);
 		int result;
 		result = getTrustedInput(dongle, prevTx[i], index, signData[i].prevout, sizeof(signData[i].prevout));
@@ -232,7 +232,6 @@ int main(int argc, char **argv) {
 		int sw;
 		int apduSize;		
 		int result;
-		bitcoinInput *currentInput = rawTx->inputs;
 
 		// Initialize the signature request
 
@@ -258,7 +257,8 @@ int main(int argc, char **argv) {
 
 		// Process each input, scriptSig containing the redeem script
 
-		for (i=0; i<txInputs; i++) {			
+		currentInput = rawTx->inputs;
+		for (i=0; i<txInputs; i++) {
 			int scriptLength;
 			int scriptOffset = 0;
 			apduSize = 0;
@@ -379,8 +379,8 @@ int main(int argc, char **argv) {
 
 		// Write each output
 
+		bitcoinOutput *currentOutput = rawTx->outputs;
 		for (i=0; i<txOutputs; i++) {
-			bitcoinOutput *currentOutput = rawTx->outputs;
 			int scriptOffset = 0;
 			// Write the output amount and script size
 			apduSize = 0;
