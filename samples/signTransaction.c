@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
 	const char *rawTxString;	
 	const char *change;
 	bitcoinTransaction *rawTx = NULL;
-		bitcoinTransaction **prevTx = NULL;
+	bitcoinTransaction **prevTx = NULL;
 	signData_t *signData = NULL;
 	unsigned int changeKeyPath[MAX_KEY_PATH];
 	int changeKeyPathLength;	
@@ -124,16 +124,13 @@ int main(int argc, char **argv) {
 
 	debugTransaction(rawTx);
 
-	prevTx = malloc(txInputs * sizeof(bitcoinTransaction*));
+	prevTx = calloc(txInputs, sizeof(bitcoinTransaction*));
 	if (prevTx == NULL) {
 		fprintf(stderr, "Couldn't allocate prevTxs\n");
 		goto error;
 	}
-	for (i=0; i<txInputs; i++) {
-		prevTx[i] = NULL;
-	}
 
-	signData = malloc(txInputs * sizeof(signData_t));
+	signData = calloc(txInputs, sizeof(signData_t));
 	if (signData == NULL) {
 		fprintf(stderr, "Couldn't allocate signData\n");
 		goto error;
@@ -147,7 +144,7 @@ int main(int argc, char **argv) {
 	for (i=0; i<txInputs; i++) {
 		signData[i].keyPathLength = 0;
 		if (keyPath != NULL) {
-			strncpy(keyPathCopy, keyPath, 128);
+			strncpy(keyPathCopy, keyPath, sizeof keyPathCopy);
 			signData[i].keyPathLength = convertPath(keyPathCopy, signData[i].keyPath);
 		}
 		if (signData[i].keyPathLength <= 0) {
