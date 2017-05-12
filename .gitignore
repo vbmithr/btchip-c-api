@@ -1,2 +1,4 @@
 *.o
 btchip_*
+signTransaction
+eth_getWalletPublicKey

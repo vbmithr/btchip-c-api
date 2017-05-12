@@ -14,7 +14,7 @@ EXE = \
 	btchip_util_runScript btchip_util_parseRawTransaction btchip_util_compressPublicKey \
 	btchip_util_getRegularInputScript btchip_util_getP2SHRedeemScript \
 	btchip_util_getP2SHInputScript btchip_util_formatTransaction btchip_util_formatOutput \
-	signTransaction
+	signTransaction eth_getWalletPublicKey
 
 all: $(EXE)
 
@@ -130,6 +130,9 @@ btchip_util_formatOutput: utils/btchip_util_formatOutput.o $(OBJS)
 	$(CC) $(LIBS) -o $@ $^
 
 signTransaction: samples/signTransaction.o btchipTrustedInput.o $(OBJS_COMM)
+	$(CC) $(LIBS) -o $@ $^
+
+eth_getWalletPublicKey: commands/eth_getWalletPublicKey.o $(OBJS_COMM)
 	$(CC) $(LIBS) -o $@ $^
 
 clean:
