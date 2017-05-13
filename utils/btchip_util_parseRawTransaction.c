@@ -26,11 +26,9 @@
 
 int main(int argc, char **argv) {
 	unsigned char *buffer;
-	unsigned char *bufferCheckSerialize;
 	bitcoinTransaction *transaction;	
 	int result;
 	int transactionLength;
-	int transactionLengthSerialized;
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage : %s [raw transaction]\n", argv[0]);
@@ -56,6 +54,8 @@ int main(int argc, char **argv) {
 	}
 	debugTransaction(transaction);
 #ifdef EXTRA_DEBUG	
+	unsigned char *bufferCheckSerialize;
+	int transactionLengthSerialized;
 	transactionLengthSerialized = computeTransactionBufferSize(transaction);	
 	assert(transactionLengthSerialized == transactionLength);
 	bufferCheckSerialize = (unsigned char*)malloc(transactionLengthSerialized);

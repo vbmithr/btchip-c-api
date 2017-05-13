@@ -1,4 +1,5 @@
-CFLAGS = -g -ggdb -std=gnu11 -Wall -Werror -Os -DHAVE_HIDAPI -DEXTRA_DEBUG -DDEBUG_COMM -I . `pkg-config --cflags hidapi-libusb`
+DEBUG = -DEXTRA_DEBUG -DDEBUG_COMM
+CFLAGS = -g -ggdb -std=gnu11 -Wall -Werror -Os -DHAVE_HIDAPI -I . `pkg-config --cflags hidapi-libusb`
 LIBS = `pkg-config --libs hidapi-libusb libconfig`
 OBJS   = hexUtils.o btchipUtils.o bitcoinVarint.o bitcoinTransaction.o bitcoinAmount.o btchipArgs.o
 OBJS_COMM = $(OBJS) dongleCommHidHidapi.o dongleComm.o ledgerLayer.o
