@@ -28,15 +28,6 @@
 static const int64_t CENT = 1000000;
 static const int64_t COIN = 100000000;
 
-inline int64_t atoi64(const char* psz)
-{
-#ifdef _MSC_VER
-    return _atoi64(psz);
-#else
-    return strtoll(psz, NULL, 10);
-#endif
-}
-
 int parseStringAmount(char *amount, int64_t* result) {
 	int strOffset = 0;
     char strWhole[11];
@@ -75,7 +66,7 @@ int parseStringAmount(char *amount, int64_t* result) {
             return -1;
     if (nUnits < 0 || nUnits > COIN)
         return -1;
-    nWhole = atoi64(strWhole);
+    nWhole = atoll(strWhole);
     nValue = nWhole*COIN + nUnits;
 
     *result = nValue;
@@ -118,12 +109,12 @@ int64_t parseHexAmount(unsigned char *buffer) {
 }
 
 void formatAmount(int64_t amount, char *result, size_t length) {
-	char tmp[20];
+	char tmp[30];
 	int i;
     int64_t n_abs = (amount > 0 ? amount : -amount);
     int64_t quotient = n_abs/COIN;
     int64_t remainder = n_abs%COIN;
-    tmp[19] = '\0';
+    tmp[29] = '\0';
     snprintf(tmp, sizeof(tmp) - 1, "%"PRId64".%08"PRId64"", quotient, remainder);
 
     // Right-trim excess zeros before the decimal point:
